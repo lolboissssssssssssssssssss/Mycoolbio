@@ -14,96 +14,99 @@
         }
 
         /* VHS HUD Elements */
-        .hud { position: fixed; font-size: 14px; color: rgba(255,255,255,0.8); z-index: 150; font-family: 'Share Tech Mono', monospace; pointer-events: none; text-transform: uppercase; }
+        .hud { position: fixed; font-size: 12px; color: rgba(255,255,255,0.8); z-index: 150; font-family: 'Share Tech Mono', monospace; pointer-events: none; text-transform: uppercase; }
         #rec-dot { top: 30px; left: 30px; color: #ff0000; animation: blink 1s infinite; }
         #play-status { top: 30px; right: 30px; letter-spacing: 2px; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        #timestamp { bottom: 30px; left: 30px; letter-spacing: 1px; }
 
-        /* CRT Overlay Scanlines */
+        /* Subtle Grain Overlay */
+        .noise {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://media.giphy.com/media/oEI9uWUPr9WUM/giphy.gif');
+            opacity: 0.03; pointer-events: none; z-index: 160;
+        }
+
+        /* CRT Overlay */
         body::before {
             content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
             z-index: 100; background-size: 100% 2px, 3px 100%; pointer-events: none;
         }
 
-        /* Background Video & Glitch Physics */
         #background-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 1; filter: blur(2px) brightness(0.35);
+            z-index: 1; filter: blur(2px) brightness(0.3);
             transition: transform 0.1s ease-out, filter 0.1s;
         }
         #background-video { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Glitch Class triggered by JS */
         .glitch-active {
-            transform: scale(1.1) translate(10px, -5px) skewX(5deg);
-            filter: blur(5px) brightness(0.6) contrast(2) hue-rotate(180deg) !important;
+            transform: scale(1.08) translate(8px, -4px);
+            filter: blur(4px) brightness(0.6) contrast(1.8) hue-rotate(90deg) !important;
         }
 
         #main-console {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 90%; max-width: 400px; background: rgba(5, 5, 5, 0.95); 
-            border: 1px solid rgba(255, 255, 255, 0.15); padding: 35px;
-            z-index: 120; backdrop-filter: blur(15px); box-shadow: 0 0 80px rgba(0,0,0,1);
+            width: 90%; max-width: 400px; background: rgba(5, 5, 5, 0.96); 
+            border: 1px solid rgba(255, 255, 255, 0.1); padding: 35px;
+            z-index: 120; backdrop-filter: blur(20px); box-shadow: 0 0 100px rgba(0,0,0,1);
         }
 
         #profile-name { 
-            font-family: 'Share Tech Mono', monospace; font-size: 42px; 
-            font-weight: 400; letter-spacing: 4px; text-align: center; 
-            margin-bottom: 8px; color: #fff; text-transform: uppercase; line-height: 1;
+            font-family: 'Share Tech Mono', monospace; font-size: 40px; 
+            letter-spacing: 4px; text-align: center; margin-bottom: 8px; color: #fff;
         }
 
         #profile-tag { 
             display: flex; justify-content: center; align-items: center; gap: 8px;
             color: #fff; font-size: 8px; letter-spacing: 2px; margin-bottom: 25px; 
-            text-transform: uppercase; width: 100%; opacity: 1;
-            text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+            text-transform: uppercase; text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
         }
-        .tag-sep { opacity: 0.4; text-shadow: none; }
 
         #user-quote { 
             font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800;
             color: #fff; border-left: 5px solid #fff; padding-left: 15px; 
             margin-bottom: 25px; text-transform: uppercase; font-style: italic;
-            letter-spacing: -1px; line-height: 1.1; max-width: 250px; 
+            line-height: 1.1; max-width: 250px; 
         }
 
         #now-playing {
             background: rgba(255, 255, 255, 0.05); padding: 12px; border-radius: 2px;
             display: flex; flex-direction: column; gap: 4px; margin-bottom: 20px; border-left: 3px solid #fff;
         }
-        .music-info span { font-size: 8px; color: #aaa; letter-spacing: 1px; }
-        .music-info strong { font-size: 10px; color: #fff; letter-spacing: 0.5px; font-family: 'Rajdhani', sans-serif; text-transform: uppercase; }
+        .music-info span { font-size: 8px; color: #777; letter-spacing: 1px; }
+        .music-info strong { font-size: 10px; color: #fff; font-family: 'Rajdhani', sans-serif; }
 
-        .system-display { width: 100%; height: 60px; border: 1px solid #222; margin-bottom: 25px; overflow: hidden; background: #000; }
-        .waveform-gif { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(2) brightness(1.2); opacity: 0.7; }
+        .system-display { width: 100%; height: 60px; border: 1px solid #1a1a1a; margin-bottom: 25px; overflow: hidden; background: #000; }
+        .waveform-gif { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) brightness(1.2); opacity: 0.6; }
 
         .social-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px; }
         .social-btn {
             border: 1px solid #222; padding: 12px; text-align: center; transition: 0.2s;
-            background: rgba(255,255,255,0.03); display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.02); display: flex; align-items: center; justify-content: center;
         }
-        .social-btn:hover { background: #fff; transform: translateY(-2px); }
-        .social-btn:hover img { filter: invert(1); }
-        .social-btn img { width: 18px; transition: 0.3s; }
+        .social-btn:hover { background: rgba(255,255,255,0.08); border-color: #fff; transform: translateY(-2px); }
+        .social-btn img { width: 18px; filter: brightness(0.8); }
 
-        #terminal { font-size: 9px; color: #666; height: 50px; overflow: hidden; line-height: 1.4; }
+        #terminal { font-size: 9px; color: #444; height: 50px; overflow: hidden; line-height: 1.4; }
 
         #start-screen { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #000; display: flex; align-items: center; justify-content: center; z-index: 200; cursor: pointer;
+            background: #000; display: flex; align-items: center; justify-content: center; z-index: 200;
         }
-        #start-screen p { letter-spacing: 15px; color: #fff; font-size: 12px; font-family: 'Rajdhani', sans-serif; }
+        #start-screen p { letter-spacing: 15px; color: #fff; font-size: 11px; font-family: 'Rajdhani', sans-serif; }
 
-        .invert { filter: invert(1) hue-rotate(180deg); }
-        .hidden { opacity: 0 !important; visibility: hidden !important; transition: 0.8s; }
+        .hidden { opacity: 0 !important; visibility: hidden !important; transition: 1s; }
+        .invert-screen { filter: invert(1) hue-rotate(180deg); }
     </style>
 </head>
 <body onmousedown="flashOn()" onmouseup="flashOff()">
 
+    <div class="noise"></div>
     <div class="hud" id="rec-dot">● REC</div>
-    <div class="hud" id="play-status">PLAY ▶</div>
+    <div class="hud" id="play-status">SP  PLAY ▶</div>
+    <div class="hud" id="timestamp">FEB. 16 2026<br><span id="clock">00:00:00</span></div>
 
     <div id="start-screen" onclick="init()">
         <p>[ INITIALIZE_CORE ]</p>
@@ -117,7 +120,6 @@
 
     <div id="main-console">
         <h1 id="profile-name">SHAATVIK</h1>
-        
         <div id="profile-tag">
             <span>DESIGNER</span><span class="tag-sep">//</span><span>PRODUCER</span><span class="tag-sep">//</span><span>PHOTOGRAPHER</span>
         </div>
@@ -125,7 +127,7 @@
         <div id="user-quote">"CANT RUSH<br>GREATNESS"</div>
 
         <div id="now-playing" class="music-info">
-            <span>AUD_STREAM_ACTIVE</span>
+            <span>STREAM_TYPE: BLAKK_ROCKSTAR</span>
             <strong>Now playing Where Was You - Travis Scott</strong>
         </div>
 
@@ -150,30 +152,27 @@
         const logs = [
             "> MOUNTING ASSETS...",
             "> DECRYPTING CORE_IV...",
-            "> GREATNESS_MODULE: LOADED",
+            "> SYSTEM_STATUS: OPTIMAL",
             "> WELCOME, SHAATVIK."
         ];
 
+        // Real-time Clock Function
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+        setInterval(updateClock, 1000);
+
         const bgContainer = document.getElementById('background-container');
-
-        function startGlitch() { bgContainer.classList.add('bg-glitch'); }
-        function stopGlitch() { bgContainer.classList.remove('bg-glitch'); }
-
-        // Logic for the hover background glitch
-        function startGlitch() {
-            bgContainer.classList.add('glitch-active');
-        }
-        function stopGlitch() {
-            bgContainer.classList.remove('glitch-active');
-        }
+        function startGlitch() { bgContainer.classList.add('glitch-active'); }
+        function stopGlitch() { bgContainer.classList.remove('glitch-active'); }
 
         function flashOn() {
-            document.body.classList.add('invert');
+            document.body.classList.add('invert-screen');
             document.getElementById('sfx-click').currentTime = 0;
             document.getElementById('sfx-click').play().catch(()=>{});
         }
-
-        function flashOff() { document.body.classList.remove('invert'); }
+        function flashOff() { document.body.classList.remove('invert-screen'); }
 
         function init() {
             document.getElementById('bg-audio').volume = 0.4;
@@ -189,9 +188,7 @@
                     document.getElementById('sfx-type').currentTime = 0;
                     document.getElementById('sfx-type').play().catch(()=>{});
                     i++;
-                } else {
-                    clearInterval(typing);
-                }
+                } else { clearInterval(typing); }
             }, 800);
         }
     </script>
