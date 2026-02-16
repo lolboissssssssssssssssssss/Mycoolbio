@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SHAATVIK // CONSOLE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@800&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Space+Mono:wght@400;700&family=Syne:wght@800&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
         
@@ -13,7 +13,13 @@
             height: 100vh; width: 100vw; font-family: 'Space Mono', monospace;
         }
 
-        /* CRT Overlay */
+        /* VHS HUD Elements */
+        .hud { position: fixed; font-size: 14px; color: rgba(255,255,255,0.8); z-index: 150; font-family: 'Share Tech Mono', monospace; pointer-events: none; text-transform: uppercase; }
+        #rec-dot { top: 30px; left: 30px; color: #ff0000; animation: blink 1s infinite; }
+        #play-status { top: 30px; right: 30px; letter-spacing: 2px; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* CRT Overlay Scanlines */
         body::before {
             content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
@@ -21,54 +27,53 @@
             z-index: 100; background-size: 100% 2px, 3px 100%; pointer-events: none;
         }
 
+        /* Background Video & Glitch Physics */
         #background-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 1; filter: blur(2px) brightness(0.35);
+            transition: transform 0.1s ease-out, filter 0.1s;
         }
         #background-video { width: 100%; height: 100%; object-fit: cover; }
 
-        #main-console {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 90%; max-width: 400px; /* Narrowed to force the quote wrap */
-            background: rgba(5, 5, 5, 0.95); 
-            border: 1px solid rgba(255, 255, 255, 0.15); 
-            padding: 35px;
-            z-index: 120; 
-            backdrop-filter: blur(15px); box-shadow: 0 0 80px rgba(0,0,0,1);
+        /* Glitch Class triggered by JS */
+        .glitch-active {
+            transform: scale(1.1) translate(10px, -5px) skewX(5deg);
+            filter: blur(5px) brightness(0.6) contrast(2) hue-rotate(180deg) !important;
         }
 
-        /* SHAATVIK: Scaled down to be cleaner */
+        #main-console {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 90%; max-width: 400px; background: rgba(5, 5, 5, 0.95); 
+            border: 1px solid rgba(255, 255, 255, 0.15); padding: 35px;
+            z-index: 120; backdrop-filter: blur(15px); box-shadow: 0 0 80px rgba(0,0,0,1);
+        }
+
         #profile-name { 
-            font-family: 'Syne', sans-serif;
-            font-size: 32px; /* Smaller, cleaner size */
-            font-weight: 800;
-            letter-spacing: 2px; text-align: center; 
-            margin-bottom: 8px; color: #fff; text-transform: uppercase;
-            line-height: 1;
+            font-family: 'Share Tech Mono', monospace; font-size: 42px; 
+            font-weight: 400; letter-spacing: 4px; text-align: center; 
+            margin-bottom: 8px; color: #fff; text-transform: uppercase; line-height: 1;
         }
 
         #profile-tag { 
-            display: flex; justify-content: center; align-items: center; gap: 6px;
-            color: #444; font-size: 7px; letter-spacing: 1px; margin-bottom: 25px; 
-            text-transform: uppercase; width: 100%;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+            color: #fff; font-size: 8px; letter-spacing: 2px; margin-bottom: 25px; 
+            text-transform: uppercase; width: 100%; opacity: 1;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
         }
+        .tag-sep { opacity: 0.4; text-shadow: none; }
 
-        /* QUOTE: Forced wrap for "Greatness" */
         #user-quote { 
-            font-family: 'Syne', sans-serif; 
-            font-size: 24px; /* Larger impact for the quote */
-            font-weight: 800;
+            font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800;
             color: #fff; border-left: 5px solid #fff; padding-left: 15px; 
             margin-bottom: 25px; text-transform: uppercase; font-style: italic;
-            letter-spacing: -1px; line-height: 1.1;
-            max-width: 200px; /* Limits width to force the wrap you wanted */
+            letter-spacing: -1px; line-height: 1.1; max-width: 250px; 
         }
 
         #now-playing {
             background: rgba(255, 255, 255, 0.05); padding: 12px; border-radius: 2px;
             display: flex; flex-direction: column; gap: 4px; margin-bottom: 20px; border-left: 3px solid #fff;
         }
-        .music-info span { font-size: 8px; color: #555; letter-spacing: 1px; }
+        .music-info span { font-size: 8px; color: #aaa; letter-spacing: 1px; }
         .music-info strong { font-size: 10px; color: #fff; letter-spacing: 0.5px; font-family: 'Rajdhani', sans-serif; text-transform: uppercase; }
 
         .system-display { width: 100%; height: 60px; border: 1px solid #222; margin-bottom: 25px; overflow: hidden; background: #000; }
@@ -76,14 +81,14 @@
 
         .social-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px; }
         .social-btn {
-            border: 1px solid #222; padding: 10px; text-align: center; transition: 0.3s;
+            border: 1px solid #222; padding: 12px; text-align: center; transition: 0.2s;
             background: rgba(255,255,255,0.03); display: flex; align-items: center; justify-content: center;
         }
-        .social-btn:hover { background: #fff; }
+        .social-btn:hover { background: #fff; transform: translateY(-2px); }
         .social-btn:hover img { filter: invert(1); }
         .social-btn img { width: 18px; transition: 0.3s; }
 
-        #terminal { font-size: 9px; color: #444; height: 50px; overflow: hidden; line-height: 1.4; }
+        #terminal { font-size: 9px; color: #666; height: 50px; overflow: hidden; line-height: 1.4; }
 
         #start-screen { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
@@ -96,6 +101,9 @@
     </style>
 </head>
 <body onmousedown="flashOn()" onmouseup="flashOff()">
+
+    <div class="hud" id="rec-dot">● REC</div>
+    <div class="hud" id="play-status">PLAY ▶</div>
 
     <div id="start-screen" onclick="init()">
         <p>[ INITIALIZE_CORE ]</p>
@@ -111,10 +119,10 @@
         <h1 id="profile-name">SHAATVIK</h1>
         
         <div id="profile-tag">
-            <span>DESIGNER</span><span>//</span><span>PRODUCER</span><span>//</span><span>PHOTOGRAPHER</span>
+            <span>DESIGNER</span><span class="tag-sep">//</span><span>PRODUCER</span><span class="tag-sep">//</span><span>PHOTOGRAPHER</span>
         </div>
 
-        <div id="user-quote">Cant Rush<br>Greatness</div>
+        <div id="user-quote">"CANT RUSH<br>GREATNESS"</div>
 
         <div id="now-playing" class="music-info">
             <span>AUD_STREAM_ACTIVE</span>
@@ -126,9 +134,9 @@
         </div>
 
         <div class="social-grid">
-            <a href="https://instagram.com/shaatvik.m/" target="_blank" class="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg"></a>
-            <a href="https://x.com/shaatvik69798" target="_blank" class="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/c/ce/X_logo_2023.svg"></a>
-            <a href="https://discord.com/users/980731046880493568" target="_blank" class="social-btn"><img src="https://www.svgrepo.com/show/353655/discord-icon.svg"></a>
+            <a href="https://instagram.com/shaatvik.m/" target="_blank" class="social-btn" onmouseover="startGlitch()" onmouseout="stopGlitch()"><img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg"></a>
+            <a href="https://x.com/shaatvik69798" target="_blank" class="social-btn" onmouseover="startGlitch()" onmouseout="stopGlitch()"><img src="https://upload.wikimedia.org/wikipedia/commons/c/ce/X_logo_2023.svg"></a>
+            <a href="https://discord.com/users/980731046880493568" target="_blank" class="social-btn" onmouseover="startGlitch()" onmouseout="stopGlitch()"><img src="https://www.svgrepo.com/show/353655/discord-icon.svg"></a>
         </div>
 
         <div id="terminal"></div>
@@ -143,9 +151,21 @@
             "> MOUNTING ASSETS...",
             "> DECRYPTING CORE_IV...",
             "> GREATNESS_MODULE: LOADED",
-            "> SYSTEM_STATUS: OPTIMAL",
             "> WELCOME, SHAATVIK."
         ];
+
+        const bgContainer = document.getElementById('background-container');
+
+        function startGlitch() { bgContainer.classList.add('bg-glitch'); }
+        function stopGlitch() { bgContainer.classList.remove('bg-glitch'); }
+
+        // Logic for the hover background glitch
+        function startGlitch() {
+            bgContainer.classList.add('glitch-active');
+        }
+        function stopGlitch() {
+            bgContainer.classList.remove('glitch-active');
+        }
 
         function flashOn() {
             document.body.classList.add('invert');
